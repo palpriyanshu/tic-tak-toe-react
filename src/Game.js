@@ -27,9 +27,11 @@ class Game extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      turn: false,
+      currentPlayer: this.props.player1,
+      nextPlayer: this.props.player2,
       isGameOver: false,
       tiles: ['1', '2', '3', '4', '5', '6', '7', '8', '9'],
+      status: `${this.props.player1.name} has turn`,
     };
     this.handleClick = this.handleClick.bind(this);
   }
@@ -38,11 +40,11 @@ class Game extends React.Component {
     return turn ? this.props.players[1] : this.props.players[0];
   }
 
-  updateStatus(tiles, turn) {
+  updateStatus(tiles, player) {
     const status = { isGameOver: false };
     if (hasWon(tiles)) {
       status.isGameOver = true;
-      status.msg = `${this.getCurrentPlayer(turn)} has won`;
+      status.msg = `${player} has won`;
     }
 
     if (hasDrawn(tiles)) {
@@ -54,28 +56,28 @@ class Game extends React.Component {
 
   updateState(id) {
     this.setState((state) => {
-      const symbol = state.turn ? '0' : 'X';
-      state.tiles[id] = symbol;
-      let gameStatus = this.updateStatus(state.tiles, state.turn);
+      const tiles = state.tiles.slice();
+      const { name, symbol } = this.state.currentPlayer;
+      tiles[id] = symbol;
+      let gameStatus = this.updateStatus(tiles, name);
       if (gameStatus.isGameOver) {
-        return { isGameOver: true, status: gameStatus.msg };
+        return { isGameOver: true, status: gameStatus.msg, tiles };
       }
-
-      const turn = !state.turn;
-      const status = `${this.getCurrentPlayer(turn)} has turn`;
-      return { tiles: state.tiles, turn, status };
+      const currentPlayer = state.nextPlayer;
+      const nextPlayer = state.currentPlayer;
+      const status = `${currentPlayer.name} has turn`;
+      return {
+        tiles,
+        currentPlayer,
+        nextPlayer,
+        status,
+      };
     });
   }
 
   handleClick(event) {
     const id = event.target.id;
     this.updateState(id);
-  }
-
-  componentDidMount() {
-    this.setState((state) => ({
-      status: `${this.getCurrentPlayer(state.turn)} has turn`,
-    }));
   }
 
   render() {
