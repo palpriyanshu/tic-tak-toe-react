@@ -29,7 +29,7 @@ class Game extends React.Component {
     this.state = {
       turn: false,
       isGameOver: false,
-      tiles: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+      tiles: ['1', '2', '3', '4', '5', '6', '7', '8', '9'],
     };
     this.handleClick = this.handleClick.bind(this);
   }
@@ -82,7 +82,7 @@ class Game extends React.Component {
     const className = this.state.isGameOver ? 'disabled board' : 'board';
     return (
       <div className="game">
-        <h1>Tic-Tak-Toe</h1>
+        <h1>Tic-Tac-Toe</h1>
         <Message status={this.state.status} />
         <div className={className}>
           <Board onClick={this.handleClick} tiles={this.state.tiles} />
