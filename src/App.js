@@ -4,8 +4,8 @@ import './App.css';
 
 const App = (props) => (
   <Game
-    player1={{ name: 'bar', symbol: '0' }}
-    player2={{ name: 'foo', symbol: 'X' }}
+    player1={{ name: 'Tom', symbol: '0' }}
+    player2={{ name: 'Jerry', symbol: 'X' }}
   />
 );
 

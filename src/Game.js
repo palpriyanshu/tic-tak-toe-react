@@ -1,7 +1,6 @@
 import React from 'react';
+import Message from './Message';
 import Board from './Board';
-
-const Message = (props) => <p className="msgBox">{props.status}</p>;
 
 const hasWon = function (tiles, value) {
   const winningConditions = [
@@ -21,7 +20,7 @@ const hasWon = function (tiles, value) {
 
 const hasDrawn = function (tiles, player1Symbol, player2Symbol) {
   return tiles.every(
-    (element) => element === player1Symbol || element === player2Symbol
+    (tileValue) => tileValue === player1Symbol || tileValue === player2Symbol
   );
 };
 
@@ -31,59 +30,46 @@ class Game extends React.Component {
     this.state = {
       currentPlayer: this.props.player1,
       nextPlayer: this.props.player2,
-      isGameOver: false,
       tiles: ['', '', '', '', '', '', '', '', ''],
-      status: `${this.props.player1.name} has turn`,
+      winner: '',
+      hasDrawn: false,
     };
+
     this.handleClick = this.handleClick.bind(this);
-  }
-
-  updateStatus(tiles, currentPlayer, nextPlayer) {
-    const status = { isGameOver: false };
-    if (hasWon(tiles, currentPlayer.symbol)) {
-      status.isGameOver = true;
-      status.msg = `${currentPlayer.name} has won`;
-    }
-
-    if (hasDrawn(tiles, currentPlayer.symbol, nextPlayer.symbol)) {
-      status.isGameOver = true;
-      status.msg = 'Game has drawn';
-    }
-    return status;
   }
 
   handleClick(id) {
     this.setState((state) => {
       const tiles = state.tiles.slice();
-      tiles[id] = state.currentPlayer.symbol;
-      let gameStatus = this.updateStatus(
-        tiles,
-        state.currentPlayer,
-        state.nextPlayer
-      );
+      const { currentPlayer, nextPlayer } = state;
+      tiles[id] = currentPlayer.symbol;
 
-      if (gameStatus.isGameOver) {
-        return { isGameOver: true, status: gameStatus.msg, tiles };
+      if (hasWon(tiles, currentPlayer.symbol)) {
+        return { winner: currentPlayer.name, tiles };
       }
 
-      return {
-        tiles,
-        currentPlayer: state.nextPlayer,
-        nextPlayer: state.currentPlayer,
-        status: `${state.nextPlayer.name} has turn`,
-      };
+      if (hasDrawn(tiles, currentPlayer.symbol, nextPlayer.symbol)) {
+        return { hasDrawn: true, tiles };
+      }
+      return { tiles, currentPlayer: nextPlayer, nextPlayer: currentPlayer };
     });
   }
 
   render() {
-    const className = this.state.isGameOver ? 'disabled board' : 'board';
+    const { winner, hasDrawn, currentPlayer } = this.state;
     return (
       <div className="game">
         <h1>Tic-Tac-Toe</h1>
-        <Message status={this.state.status} />
-        <div className={className}>
-          <Board onClick={this.handleClick} tiles={this.state.tiles} />
-        </div>
+        <Message
+          winner={winner}
+          hasDrawn={hasDrawn}
+          currentPlayer={currentPlayer}
+        />
+        <Board
+          isGameOver={winner || hasDrawn}
+          onClick={this.handleClick}
+          tiles={this.state.tiles}
+        />
       </div>
     );
   }
