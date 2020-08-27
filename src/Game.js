@@ -19,8 +19,10 @@ const hasWon = function (tiles) {
   );
 };
 
-const hasDrawn = function (tiles) {
-  return tiles.every((element) => element === '0' || element === 'X');
+const hasDrawn = function (tiles, player1Symbol, player2Symbol) {
+  return tiles.every(
+    (element) => element === player1Symbol || element === player2Symbol
+  );
 };
 
 class Game extends React.Component {
@@ -36,48 +38,41 @@ class Game extends React.Component {
     this.handleClick = this.handleClick.bind(this);
   }
 
-  getCurrentPlayer(turn) {
-    return turn ? this.props.players[1] : this.props.players[0];
-  }
-
-  updateStatus(tiles, player) {
+  updateStatus(tiles, currentPlayer, nextPlayer) {
     const status = { isGameOver: false };
     if (hasWon(tiles)) {
       status.isGameOver = true;
-      status.msg = `${player} has won`;
+      status.msg = `${currentPlayer.name} has won`;
     }
 
-    if (hasDrawn(tiles)) {
+    if (hasDrawn(tiles, currentPlayer.symbol, nextPlayer.symbol)) {
       status.isGameOver = true;
       status.msg = 'Game has drawn';
     }
     return status;
   }
 
-  updateState(id) {
+  handleClick(id) {
     this.setState((state) => {
       const tiles = state.tiles.slice();
-      const { name, symbol } = this.state.currentPlayer;
-      tiles[id] = symbol;
-      let gameStatus = this.updateStatus(tiles, name);
+      tiles[id] = state.currentPlayer.symbol;
+      let gameStatus = this.updateStatus(
+        tiles,
+        state.currentPlayer,
+        state.nextPlayer
+      );
+
       if (gameStatus.isGameOver) {
         return { isGameOver: true, status: gameStatus.msg, tiles };
       }
-      const currentPlayer = state.nextPlayer;
-      const nextPlayer = state.currentPlayer;
-      const status = `${currentPlayer.name} has turn`;
+
       return {
         tiles,
-        currentPlayer,
-        nextPlayer,
-        status,
+        currentPlayer: state.nextPlayer,
+        nextPlayer: state.currentPlayer,
+        status: `${state.nextPlayer.name} has turn`,
       };
     });
-  }
-
-  handleClick(event) {
-    const id = event.target.id;
-    this.updateState(id);
   }
 
   render() {
