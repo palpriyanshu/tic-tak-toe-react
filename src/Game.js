@@ -3,7 +3,7 @@ import Board from './Board';
 
 const Message = (props) => <p className="msgBox">{props.status}</p>;
 
-const hasWon = function (tiles) {
+const hasWon = function (tiles, value) {
   const winningConditions = [
     [0, 1, 2],
     [3, 4, 5],
@@ -14,8 +14,8 @@ const hasWon = function (tiles) {
     [0, 4, 8],
     [2, 4, 6],
   ];
-  return winningConditions.some(
-    ([id1, id2, id3]) => tiles[id1] === tiles[id2] && tiles[id2] === tiles[id3]
+  return winningConditions.some((tilesCombination) =>
+    tilesCombination.every((tileIndex) => tiles[tileIndex] === value)
   );
 };
 
@@ -32,7 +32,7 @@ class Game extends React.Component {
       currentPlayer: this.props.player1,
       nextPlayer: this.props.player2,
       isGameOver: false,
-      tiles: ['1', '2', '3', '4', '5', '6', '7', '8', '9'],
+      tiles: ['', '', '', '', '', '', '', '', ''],
       status: `${this.props.player1.name} has turn`,
     };
     this.handleClick = this.handleClick.bind(this);
@@ -40,7 +40,7 @@ class Game extends React.Component {
 
   updateStatus(tiles, currentPlayer, nextPlayer) {
     const status = { isGameOver: false };
-    if (hasWon(tiles)) {
+    if (hasWon(tiles, currentPlayer.symbol)) {
       status.isGameOver = true;
       status.msg = `${currentPlayer.name} has won`;
     }
