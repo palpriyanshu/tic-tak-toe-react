@@ -1,22 +1,16 @@
 import React from 'react';
 
-class Tile extends React.Component {
-  constructor(props) {
-    super(props);
+const Tile = function (props) {
+  let disable = false;
+  const { id, value, onClick } = props;
+  if (value === '0' || value === 'X') {
+    disable = true;
   }
-
-  render() {
-    let disable = false;
-    const { id, value, onClick } = this.props;
-    if (value === '0' || value === 'X') {
-      disable = true;
-    }
-    return (
-      <button disabled={disable} onClick={onClick} className="tile" id={id}>
-        {value}
-      </button>
-    );
-  }
-}
+  return (
+    <button disabled={disable} onClick={onClick} className="tile" id={id}>
+      {value}
+    </button>
+  );
+};
 
 export default Tile;
